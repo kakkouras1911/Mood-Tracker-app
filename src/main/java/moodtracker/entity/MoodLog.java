@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "mood_logs", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"user_id", "log_date"})
@@ -16,6 +18,8 @@ import java.util.UUID;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+
 public class MoodLog {
 
     @Id
@@ -24,6 +28,7 @@ public class MoodLog {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "passwordHash", "moodLogs"})
     private User user;
 
     @Column(name = "mood_score", nullable = false)

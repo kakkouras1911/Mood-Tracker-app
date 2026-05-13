@@ -49,22 +49,24 @@ public class MoodLogService {
     }
 
     @Transactional
-    public MoodLog updateLog(UUID logId, int moodScore, BigDecimal sleepHours,
-                              boolean exercised, String notes,
-                              Set<UUID> emotionIds, Set<UUID> activityIds) {
+public MoodLog updateLog(UUID logId, int moodScore, BigDecimal sleepHours,
+                          boolean exercised, String notes,
+                          Set<UUID> emotionIds, Set<UUID> activityIds) {
 
-        MoodLog log = moodLogRepository.findById(logId)
-            .orElseThrow(() -> new RuntimeException("Log not found"));
+    MoodLog log = moodLogRepository.findById(logId)
+        .orElseThrow(() -> new RuntimeException("Log not found"));
 
-        log.setMoodScore(moodScore);
-        log.setSleepHours(sleepHours);
-        log.setExercised(exercised);
-        log.setNotes(notes);
-        log.setEmotions(Set.copyOf(emotionRepository.findAllById(emotionIds)));
-        log.setActivities(Set.copyOf(activityTagRepository.findAllById(activityIds)));
+    log.setMoodScore(moodScore);
+    log.setSleepHours(sleepHours);
+    log.setExercised(exercised);
+    log.setNotes(notes);
+    
+    // Χρήση mutable HashSet αντί για immutable Set.copyOf()
+    log.setEmotions(new java.util.HashSet<>(emotionRepository.findAllById(emotionIds)));
+    log.setActivities(new java.util.HashSet<>(activityTagRepository.findAllById(activityIds)));
 
-        return moodLogRepository.save(log);
-    }
+    return moodLogRepository.save(log);
+}
 
     public List<MoodLog> getUserLogs(UUID userId) {
         return moodLogRepository.findByUserIdOrderByLogDateDesc(userId);

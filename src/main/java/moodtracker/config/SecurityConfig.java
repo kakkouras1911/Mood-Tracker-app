@@ -5,6 +5,7 @@ import moodtracker.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -38,16 +39,19 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Δημόσια endpoints (login/register)
-                .requestMatchers("/api/auth/**").permitAll()
-                // Μόνο admin
-                .requestMatchers("/api/admin/**").hasAuthority("admin")
-                // Μόνο therapist
-                .requestMatchers("/api/therapist/**").hasAuthority("therapist")
-                // Authenticated χρήστες
-                .anyRequest().authenticated()
-            )
+
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers(HttpMethod.GET,    "/api/logs/**").hasAnyAuthority("patient", "therapist")
+            .requestMatchers(HttpMethod.POST,   "/api/logs/**").hasAuthority("patient")
+            .requestMatchers(HttpMethod.PUT,    "/api/logs/**").hasAnyAuthority("patient", "therapist")
+            .requestMatchers(HttpMethod.DELETE, "/api/logs/**").hasAuthority("patient")
+            .requestMatchers("/api/admin/**").hasAuthority("admin")
+            .requestMatchers("/api/therapist/**").hasAuthority("therapist")
+            .requestMatchers("/api/patient/**").hasAuthority("patient")
+            .anyRequest().authenticated()
+        )
+
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

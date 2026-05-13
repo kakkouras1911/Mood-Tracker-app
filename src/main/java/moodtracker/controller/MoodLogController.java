@@ -41,22 +41,23 @@ public class MoodLogController {
         return ResponseEntity.ok(log);
     }
 
-    @PutMapping("/{logId}")
-    public ResponseEntity<MoodLog> updateLog(
-            @PathVariable UUID logId,
-            @RequestBody Map<String, Object> body) {
+            @PutMapping("/{logId}")
+        public ResponseEntity<MoodLog> updateLog(
+                @AuthenticationPrincipal String email,
+                @PathVariable UUID logId,
+                @RequestBody Map<String, Object> body) {
 
-        MoodLog log = moodLogService.updateLog(
-            logId,
-            (Integer) body.get("moodScore"),
-            new BigDecimal(body.get("sleepHours").toString()),
-            (Boolean) body.get("exercised"),
-            (String) body.get("notes"),
-            toUUIDSet((List<?>) body.get("emotionIds")),
-            toUUIDSet((List<?>) body.get("activityIds"))
-        );
-        return ResponseEntity.ok(log);
-    }
+            MoodLog log = moodLogService.updateLog(
+                logId,
+                (Integer) body.get("moodScore"),
+                new BigDecimal(body.get("sleepHours").toString()),
+                (Boolean) body.get("exercised"),
+                (String) body.get("notes"),
+                toUUIDSet((List<?>) body.get("emotionIds")),
+                toUUIDSet((List<?>) body.get("activityIds"))
+            );
+            return ResponseEntity.ok(log);
+        }
 
     @GetMapping
     public ResponseEntity<List<MoodLog>> getLogs(
