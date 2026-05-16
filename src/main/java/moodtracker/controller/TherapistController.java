@@ -107,6 +107,11 @@ public class TherapistController {
         return ResponseEntity.ok(Map.of("message", "Connected successfully",
                                          "patientId", connection.getPatient().getId()));
     }
+
+    @GetMapping("/patients/{patientId}/reminders")
+public ResponseEntity<List<Reminder>> getReminders(@PathVariable UUID patientId) {
+    return ResponseEntity.ok(reminderService.getPatientReminders(patientId));
+}
  } 
     
 

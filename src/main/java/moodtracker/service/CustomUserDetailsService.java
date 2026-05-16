@@ -16,11 +16,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-            .map(user -> new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPasswordHash(),
-                List.of(new SimpleGrantedAuthority(user.getRole().name()))
-            ))
+            .map(user -> {
+                if (!user.isActive()) {
+                    throw new UsernameNotFoundException("Account pending approval");
+                }
+                return new org.springframework.security.core.userdetails.User(
+                    user.getEmail(),
+                    user.getPasswordHash(),
+                    List.of(new SimpleGrantedAuthority(user.getRole().name()))
+                );
+            })
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 }

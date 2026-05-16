@@ -17,18 +17,22 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public User register(String name, String email, String password, UserRole role) {
-        if (userRepository.existsByEmail(email))
-            throw new RuntimeException("Email already in use");
+    if (userRepository.existsByEmail(email))
+        throw new RuntimeException("Email already in use");
 
-        User user = User.builder()
-            .name(name)
-            .email(email)
-            .passwordHash(passwordEncoder.encode(password))
-            .role(role)
-            .build();
+    // Οι θεραπευτές περιμένουν έγκριση
+    boolean isActive = role != UserRole.therapist;
 
-        return userRepository.save(user);
-    }
+    User user = User.builder()
+        .name(name)
+        .email(email)
+        .passwordHash(passwordEncoder.encode(password))
+        .role(role)
+        .isActive(isActive)
+        .build();
+
+    return userRepository.save(user);
+}
 
     public User findById(UUID id) {
         return userRepository.findById(id)

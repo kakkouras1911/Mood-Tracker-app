@@ -34,16 +34,19 @@ public class TherapistPatientService {
     }
 
     @Transactional
-    public TherapistPatient generateToken(UUID patientId) {
-        User patient = userRepository.findById(patientId)
-            .orElseThrow(() -> new RuntimeException("Patient not found"));
+public TherapistPatient generateToken(UUID patientId) {
+    User patient = userRepository.findById(patientId)
+        .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        TherapistPatient connection = TherapistPatient.builder()
-            .patient(patient)
-            .build();
+    // Έλεγξε αν υπάρχει ήδη active token χωρίς therapist
+    TherapistPatient connection = TherapistPatient.builder()
+        .patient(patient)
+        .accessToken(java.util.UUID.randomUUID().toString())
+        .isActive(true)
+        .build();
 
-        return therapistPatientRepository.save(connection);
-    }
+    return therapistPatientRepository.save(connection);
+}
 
     @Transactional
     public void revokeAccess(UUID connectionId) {
@@ -58,4 +61,8 @@ public class TherapistPatientService {
     public List<TherapistPatient> getPatients(UUID therapistId) {
         return therapistPatientRepository.findByTherapistIdAndIsActiveTrue(therapistId);
     }
+
+    public List<TherapistPatient> getPatientConnections(UUID patientId) {
+    return therapistPatientRepository.findByPatientIdAndIsActiveTrue(patientId);
+}
 }   

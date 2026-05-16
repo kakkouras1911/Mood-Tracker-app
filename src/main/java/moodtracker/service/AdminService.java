@@ -6,12 +6,14 @@ import moodtracker.entity.User;
 import moodtracker.entity.UserRole;
 import moodtracker.repository.ActivityTagRepository;
 import moodtracker.repository.EmotionRepository;
+import moodtracker.repository.MoodLogRepository;
 import moodtracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final EmotionRepository emotionRepository;
     private final ActivityTagRepository activityTagRepository;
+    private final MoodLogRepository moodLogRepository;
 
     // --- Διαχείριση Θεραπευτών ---
     public List<User> getPendingTherapists() {
@@ -78,4 +81,34 @@ public class AdminService {
     public void deleteActivityTag(UUID id) {
         activityTagRepository.deleteById(id);
     }
+
+
+public Map<String, Object> getAnonymousStats() {
+    double avgMood = moodLogRepository.findAll()
+        .stream()
+        .mapToInt(l -> l.getMoodScore())
+        .average()
+        .orElse(0);
+
+    long totalLogs = moodLogRepository.count();
+
+    long exercisedCount = moodLogRepository.findAll()
+        .stream()
+        .filter(l -> l.isExercised())
+        .count();
+
+    double avgSleep = moodLogRepository.findAll()
+        .stream()
+        .filter(l -> l.getSleepHours() != null)
+        .mapToDouble(l -> l.getSleepHours().doubleValue())
+        .average()
+        .orElse(0);
+
+    return Map.of(
+        "averageMood", Math.round(avgMood * 100.0) / 100.0,
+        "totalLogs", totalLogs,
+        "exerciseRate", totalLogs > 0 ? Math.round((exercisedCount * 100.0 / totalLogs)) : 0,
+        "averageSleep", Math.round(avgSleep * 100.0) / 100.0
+    );
+}
 }

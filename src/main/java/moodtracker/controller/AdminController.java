@@ -73,6 +73,11 @@ public class AdminController {
         adminService.deleteActivityTag(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/stats/anonymous")
+public ResponseEntity<Map<String, Object>> getAnonymousStats() {
+    return ResponseEntity.ok(adminService.getAnonymousStats());
+}
 } 
     
 

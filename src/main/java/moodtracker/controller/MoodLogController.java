@@ -89,4 +89,5 @@ public class MoodLogController {
             .map(id -> UUID.fromString(id.toString()))
             .toList());
     }
+
 }

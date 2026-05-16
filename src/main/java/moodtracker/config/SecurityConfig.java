@@ -41,14 +41,21 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
+            .requestMatchers("/error").permitAll()
+            // Specific admin endpoints για patient - ΠΡΩΤΑ αυτα
+            .requestMatchers(HttpMethod.GET, "/api/admin/emotions/active").hasAnyAuthority("patient", "therapist")
+            .requestMatchers(HttpMethod.GET, "/api/admin/activity-tags/active").hasAnyAuthority("patient", "therapist")
+            // Γενικα admin rules - ΜΕΤΑ
+            .requestMatchers("/api/admin/**").hasAuthority("admin")
+            .requestMatchers("/api/therapist/**").hasAuthority("therapist")
             .requestMatchers(HttpMethod.GET,    "/api/logs/**").hasAnyAuthority("patient", "therapist")
             .requestMatchers(HttpMethod.POST,   "/api/logs/**").hasAuthority("patient")
             .requestMatchers(HttpMethod.PUT,    "/api/logs/**").hasAnyAuthority("patient", "therapist")
             .requestMatchers(HttpMethod.DELETE, "/api/logs/**").hasAuthority("patient")
-            .requestMatchers("/api/admin/**").hasAuthority("admin")
-            .requestMatchers("/api/therapist/**").hasAuthority("therapist")
-            .requestMatchers("/api/patient/**").hasAuthority("patient")
+            .requestMatchers("/api/patients/**").hasAuthority("patient")
+            .requestMatchers("/api/public/**").authenticated()
             .anyRequest().authenticated()
         )
 
