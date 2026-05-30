@@ -42,6 +42,9 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "certificate_path")
+    private String certificatePath;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

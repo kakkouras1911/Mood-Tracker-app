@@ -9,6 +9,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.List;
+import moodtracker.entity.Reminder;
+import moodtracker.service.ReminderService;
 import java.util.UUID;
 
 @RestController
@@ -18,6 +20,7 @@ public class PatientController {
 
     private final TherapistPatientService therapistPatientService;
     private final UserService userService;
+    private final ReminderService reminderService;
 
     // Δημιουργία token για κοινοποίηση στον θεραπευτή
    @PostMapping("/token/generate")
@@ -45,6 +48,13 @@ public ResponseEntity<Map<String, String>> generateToken(
     public ResponseEntity<Void> revokeAccess(@PathVariable UUID connectionId) {
         therapistPatientService.revokeAccess(connectionId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/reminders")
+    public ResponseEntity<List<Reminder>> getMyReminders(
+            @AuthenticationPrincipal String email) {
+        UUID patientId = userService.findByEmail(email).getId();
+        return ResponseEntity.ok(reminderService.getPatientReminders(patientId));
     }
 
     @GetMapping("/connections")

@@ -56,10 +56,15 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    // Activity Tags
+   
     @GetMapping("/activity-tags")
     public ResponseEntity<List<ActivityTag>> getActivityTags() {
         return ResponseEntity.ok(adminService.getAllActivityTags());
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(adminService.getAllUsers());
     }
 
     @PostMapping("/activity-tags")
@@ -75,9 +80,8 @@ public class AdminController {
     }
 
     @GetMapping("/stats/anonymous")
-public ResponseEntity<Map<String, Object>> getAnonymousStats() {
-    return ResponseEntity.ok(adminService.getAnonymousStats());
+    public ResponseEntity<Map<String, Object>> getAnonymousStats() {
+        return ResponseEntity.ok(adminService.getAnonymousStats());
+    }
 }
-} 
-    
 

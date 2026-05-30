@@ -64,6 +64,10 @@ public class AdminService {
         emotionRepository.deleteById(id);
     }
 
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
     // --- Διαχείριση Activity Tags ---
     public List<ActivityTag> getAllActivityTags() {
         return activityTagRepository.findAll();
